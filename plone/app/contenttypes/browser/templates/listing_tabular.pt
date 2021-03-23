@@ -22,7 +22,7 @@
 
       <div class="table-responsive">
 
-        <table class="table table-striped" tal:define="tabular_fields view/tabular_fields; thumb_scale_table python:view.get_thumb_scale_table(); img_class python:'thumb-%s float-end' % thumb_scale_table; showicons  python:view.show_icons();" summary="Content listing" i18n:attributes="summary summary_content_listing;">
+        <table class="table table-striped" tal:define="tabular_fields view/tabular_fields; thumb_scale_table python:view.get_thumb_scale_table(); showicons  python:view.show_icons();" summary="Content listing" i18n:attributes="summary summary_content_listing;">
 
           <thead>
             <tr>
@@ -31,58 +31,11 @@
               <th class="text-nowrap" i18n:translate="image" tal:condition="python:thumb_scale_table">Image</th>
             </tr>
           </thead>
-
           <tbody tal:define="portal python:portal_state.portal(); image_scale portal/@@image_scale">
-            <tal:entries tal:repeat="item python:batch">
-              <tal:block tal:define="item_url python:item.getURL();
-                                      item_id python:item.getId();
-                                      item_title python:item.Title();
-                                      item_title python:item_title or item_id;
-                                      item_type python:item.PortalType();
-                                      item_type_class python:'contenttype/' + view.normalizeString(item_type) if showicons else '';
-                                      item_wf_state python:item.review_state();
-                                      item_wf_state_class python:'state-' + view.normalizeString(item_wf_state);
-                                      item_creator python:item.Creator();
-                                      item_has_image python:item.getIcon;
-                                      item_link python:item_type in view.use_view_action and item_url+'/view' or item_url;
-                                      item_mime_type python:item.mime_type;
-                                      item_mime_type_icon python: 'mimetype-' + item_mime_type;
-                                      ">
-
-                <tr metal:define-macro="listitem">
-
-                  <td>
-                    <tal:icon tal:condition="python: item_type == 'File'" tal:replace="structure python:icons.tag(item_mime_type_icon)" />
-                    <tal:icon tal:condition="python: item_type != 'File'" tal:replace="structure python:icons.tag(item_type_class)" />
-                  </td>
-
-                  <tal:block tal:repeat="field python:tabular_fields">
-
-                  <td class="text-nowrap" tal:condition="python:field not in ['Title', 'Creator', 'getIcon']" tal:define="field_data python:view.tabular_fielddata(item, field)">
-                    <tal:block tal:replace="python: field_data.get('value')" />
-                  </td>
-
-                  <td class="text-nowrap" tal:condition="python:field == 'Title'">
-                    <a tal:attributes="href python:item_link; class string:$item_type_class $item_wf_state_class url; title python:item_type" tal:content="python: item_title">
-                      Item Title
-                    </a>
-                  </td>
-
-                  <td class="text-nowrap" tal:condition="python:field == 'Creator'" tal:define="author python:view.pas_member.info(item_creator); name python:author['fullname'] or author['username']">
-                    <a tal:condition="python: author" tal:attributes="href string:${view.navigation_root_url}/author/${item_creator}" tal:content="python: name">Jos Henken</a>
-                  </td>
-
-                  </tal:block>
-
-                  <td>
-                    <a tal:condition="python:item_has_image and thumb_scale_table">
-                      <img tal:attributes="href python: item_link" tal:replace="structure python:image_scale.tag(item, 'image', scale=thumb_scale_table, css_class=img_class)" />
-                    </a>
-                  </td>
-
+            <tal:entries tal:repeat="item batch">
+                <tr metal:define-macro="listitem"
+                    tal:content="structure python:view.render_cells(item)">
                 </tr>
-
-              </tal:block>
             </tal:entries>
           </tbody>
         </table>

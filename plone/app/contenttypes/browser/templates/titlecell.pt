@@ -1,0 +1,7 @@
+<td class="text-nowrap">
+  <a tal:attributes="href view/link;
+                     class string:${view/type_class} ${view/wf_state_class} url;
+                     title context/PortalType"
+     tal:content="view/title">Item Title
+  </a>
+</td>
